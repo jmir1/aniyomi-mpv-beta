@@ -23,7 +23,7 @@ jobs:
         with:
           repository: 'jmir1/aniyomi'
           fetch-depth: 0
-          ref: 'aniyomi-mpv'
+          ref: 'master'
         if: github.event.inputs.git-ref == ''
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v2
