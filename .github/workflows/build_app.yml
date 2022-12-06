@@ -1,6 +1,9 @@
 name: Build job
 
 on:
+  push:
+    branches:
+      - main
   # Just manually for now
   #schedule:
   #  - cron: '0 23 * * 6'
@@ -116,7 +119,7 @@ jobs:
             aniyomi-armeabi-v7a-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-x86-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk
-          draft: ${{ github.event.inputs.dry-run != '' }}
+          draft: true # ${{ github.event.inputs.dry-run != '' }}
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
