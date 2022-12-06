@@ -19,14 +19,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone Repository (Latest)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: 'jmir1/aniyomi'
           fetch-depth: 0
           ref: 'master'
         if: github.event.inputs.git-ref == ''
       - name: Clone Repository (Custom Ref)
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         if: github.event.inputs.git-ref != ''
         with:
           repository: 'jmir1/aniyomi'
@@ -34,8 +34,9 @@ jobs:
           ref: ${{ github.event.inputs.git-ref }}
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       - name: Get previous release
@@ -66,12 +67,9 @@ jobs:
           {delimiter}" >> $GITHUB_ENV
           mkdir -p ~/.android/ && echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 --decode > ~/.android/debug.keystore
       - name: Build APK
-        uses: gradle/gradle-command-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: assembleStandardPreview
-          distributions-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
 
       - name: Clean up build artifacts
         run: |
@@ -110,8 +108,7 @@ jobs:
             | Universal | ${{ env.APK_UNIVERSAL_SHA }}
             | arm64-v8a | ${{ env.APK_ARM64_V8A_SHA }}
             | armeabi-v7a | ${{ env.APK_ARMEABI_V7A_SHA }}
-            | x86 | ${{ env.APK_X86_SHA }}
-            | x86_64 | ${{ env.APK_X86_64_SHA }} |
+            | x86 | ${{ env.APK_X86_SHA }} |
           files: |
             aniyomi-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-arm64-v8a-r${{ env.COMMIT_COUNT }}.apk
