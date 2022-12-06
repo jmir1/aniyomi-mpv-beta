@@ -92,7 +92,7 @@ jobs:
           sha=`sha256sum aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk | awk '{ print $1 }'`
           echo "APK_X86_64_SHA=$sha" >> $GITHUB_ENV
       - name: Create release
-        uses: softprops/action-gh-release@v0.1.14
+        uses: softprops/action-gh-release@v0.1.15
         with:
           tag_name: r${{ env.COMMIT_COUNT }}
           name: Aniyomi MPV Beta r${{ env.COMMIT_COUNT }}
