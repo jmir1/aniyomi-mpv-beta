@@ -21,31 +21,31 @@ jobs:
       - name: Clone Repository (Latest)
         uses: actions/checkout@v3
         with:
-          repository: 'jmir1/aniyomi'
+          repository: jmir1/aniyomi
           fetch-depth: 0
-          ref: 'master'
+          ref: master
         if: github.event.inputs.git-ref == ''
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v3
         if: github.event.inputs.git-ref != ''
         with:
-          repository: 'jmir1/aniyomi'
+          repository: jmir1/aniyomi
           fetch-depth: 0
           ref: ${{ github.event.inputs.git-ref }}
 
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
-          distribution: 'zulu'
+          distribution: zulu
           java-version: 11
 
       - name: Get previous release
         id: last_release
-        uses: InsonusK/get-latest-release@v1.0.1
+        uses: jmir1/github-action-get-latest-release@v1
         with:
           myToken: ${{ github.token }}
-          exclude_types: "draft|prerelease"
-          view_top: 1
+          repository: ${{ github.repository }}
+          excludes: prerelease, draft
 
       - name: Prepare build
         run: |
@@ -54,7 +54,7 @@ jobs:
           echo "COMMIT_COUNT=$commit_count" >> $GITHUB_ENV
           current_sha=$(git rev-parse HEAD)
           echo "CURRENT_SHA=$current_sha" >> $GITHUB_ENV
-          prev_commit_count=$(echo "${{ steps.last_release.outputs.tag_name }}" | sed -e "s/^r//")
+          prev_commit_count=$(echo "${{ steps.last_release.outputs.release }}" | sed -e "s/^r//")
           commit_count_diff=$(expr $commit_count - $prev_commit_count)
           commit_count_diff_one_more=$(expr $commit_count_diff + 1)
           prev_release_sha=$(git log --topo-order -n $commit_count_diff_one_more --skip $commit_count_diff --max-count 1 --pretty=format:"%H")
@@ -108,7 +108,8 @@ jobs:
             | Universal | ${{ env.APK_UNIVERSAL_SHA }}
             | arm64-v8a | ${{ env.APK_ARM64_V8A_SHA }}
             | armeabi-v7a | ${{ env.APK_ARMEABI_V7A_SHA }}
-            | x86 | ${{ env.APK_X86_SHA }} |
+            | x86 | ${{ env.APK_X86_SHA }}
+            | x86_64 | ${{ env.APK_X86_64_SHA }} |
           files: |
             aniyomi-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-arm64-v8a-r${{ env.COMMIT_COUNT }}.apk
