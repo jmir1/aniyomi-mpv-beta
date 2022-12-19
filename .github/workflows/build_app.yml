@@ -92,6 +92,16 @@ jobs:
           cp app/build/outputs/apk/standard/preview/app-standard-x86_64-preview.apk aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk
           sha=`sha256sum aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk | awk '{ print $1 }'`
           echo "APK_X86_64_SHA=$sha" >> $GITHUB_ENV
+      - name: copy artifacts
+        run: |
+          mkdir apks
+          cp aniyomi-*.apk apks/
+      - name: upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: "apks"
+          path: "apks/"
+          retention-days: 1
       - name: Create release
         uses: softprops/action-gh-release@v0.1.15
         with:
