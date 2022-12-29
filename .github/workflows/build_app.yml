@@ -1,9 +1,6 @@
 name: Build job
 
 on:
-  push:
-    branches:
-      - test
   # Just manually for now
   #schedule:
   #  - cron: '0 23 * * 6'
