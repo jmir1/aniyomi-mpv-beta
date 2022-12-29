@@ -3,7 +3,7 @@ name: Build job
 on:
   push:
     branches:
-      - main
+      - test
   # Just manually for now
   #schedule:
   #  - cron: '0 23 * * 6'
@@ -28,6 +28,7 @@ jobs:
           fetch-depth: 0
           ref: master
         if: github.event.inputs.git-ref == ''
+
       - name: Clone Repository (Custom Ref)
         uses: actions/checkout@v3
         if: github.event.inputs.git-ref != ''
@@ -59,6 +60,7 @@ jobs:
           echo "CURRENT_SHA=$current_sha" >> $GITHUB_ENV
           prev_commit_count=$(echo "${{ steps.last_release.outputs.release }}" | sed -e "s/^r//")
           commit_count_diff=$(expr $commit_count - $prev_commit_count)
+          [ $commit_count_diff != 0 ] || exit 1
           commit_count_diff_one_more=$(expr $commit_count_diff + 1)
           prev_release_sha=$(git log --topo-order -n $commit_count_diff_one_more --skip $commit_count_diff --max-count 1 --pretty=format:"%H")
           echo "PREV_RELEASE_SHA=$prev_release_sha" >> $GITHUB_ENV
@@ -69,6 +71,7 @@ jobs:
             | jq -r '.[]|"- \(.message | first) (@\(.username))"')
           {delimiter}" >> $GITHUB_ENV
           mkdir -p ~/.android/ && echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 --decode > ~/.android/debug.keystore
+
       - name: Build APK
         uses: gradle/gradle-build-action@v2
         with:
@@ -92,16 +95,7 @@ jobs:
           cp app/build/outputs/apk/standard/preview/app-standard-x86_64-preview.apk aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk
           sha=`sha256sum aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk | awk '{ print $1 }'`
           echo "APK_X86_64_SHA=$sha" >> $GITHUB_ENV
-      - name: copy artifacts
-        run: |
-          mkdir apks
-          cp aniyomi-*.apk apks/
-      - name: upload results
-        uses: actions/upload-artifact@v3
-        with:
-          name: "apks"
-          path: "apks/"
-          retention-days: 1
+
       - name: Create release
         uses: softprops/action-gh-release@v0.1.15
         with:
@@ -129,7 +123,7 @@ jobs:
             aniyomi-armeabi-v7a-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-x86-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-x86_64-r${{ env.COMMIT_COUNT }}.apk
-          draft: true # ${{ github.event.inputs.dry-run != '' }}
+          draft: ${{ github.event.inputs.dry-run != '' }}
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
