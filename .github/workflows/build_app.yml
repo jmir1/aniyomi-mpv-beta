@@ -114,6 +114,9 @@ jobs:
             | armeabi-v7a | ${{ env.APK_ARMEABI_V7A_SHA }}
             | x86 | ${{ env.APK_X86_SHA }}
             | x86_64 | ${{ env.APK_X86_64_SHA }} |
+            ### ⬇️ Which APK do I download? ⬇️
+            
+            Unless you have an old device, you generally want to get `arm64-v8a`. Try `armeabi-v7a` otherwise. `x86` devices are very rare. If you are unsure or require compatibility then the `universal` APK (the biggest in size) will work everywhere.
           files: |
             aniyomi-r${{ env.COMMIT_COUNT }}.apk
             aniyomi-arm64-v8a-r${{ env.COMMIT_COUNT }}.apk
