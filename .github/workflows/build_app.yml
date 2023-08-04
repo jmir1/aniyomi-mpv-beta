@@ -34,11 +34,11 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.inputs.git-ref }}
 
-      - name: Set up JDK 11
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: zulu
-          java-version: 11
+          java-version: 17
 
       - name: Get previous release
         id: last_release
@@ -99,6 +99,7 @@ jobs:
           tag_name: r${{ env.COMMIT_COUNT }}
           name: Aniyomi MPV Beta r${{ env.COMMIT_COUNT }}
           body: |
+            # THIS IS NOT AN OFFICIALLY SUPPORTED VERSION OF ANIYOMI!!! USE AT YOUR OWN RISK!
             ### Commits
             
             https://github.com/jmir1/aniyomi/compare/${{ env.PREV_RELEASE_SHA }}...${{ env.CURRENT_SHA }}
