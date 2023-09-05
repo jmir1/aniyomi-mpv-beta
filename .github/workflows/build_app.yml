@@ -84,6 +84,12 @@ jobs:
         with:
           arguments: assembleStandardPreview
 
+      - name: Upload Proguard mapping file
+        uses: actions/upload-artifact@v3
+        with:
+          name: mapping.txt
+          path: app/build/outputs/mapping/standardPreview/mapping.txt
+
       - name: Clean up build artifacts
         run: |
           set -e
